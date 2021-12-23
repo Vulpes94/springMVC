@@ -1,0 +1,15 @@
+#Eclipse
+/build/
+.settings
+.classpath
+.project
+
+#Spring
+.springBeans
+
+#ignore properties file
+config.properties
+
+#Tern plugin
+.tern-project
+
