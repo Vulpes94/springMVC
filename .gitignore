@@ -4,6 +4,11 @@
 .classpath
 .project
 
+#Intellij
+/out/
+.idea
+*.iml
+
 #Spring
 .springBeans
 
