@@ -91,6 +91,7 @@ public class GuestServiceImp implements GuestService {
 
 		int num = Integer.parseInt(request.getParameter("num"));
 		GuestDto guestDto = guestDao.select(num);
+		guestDto.setMessage(guestDto.getMessage().replace("<br/>", "\r\n"));
 		LogAspect.logger.info(LogAspect.LogMsg + guestDto.toString());
 
 		mav.addObject("guestDto", guestDto);
