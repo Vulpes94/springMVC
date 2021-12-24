@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	
+	
+	<!-- Mapping URI & Function  -->
+	<bean id="mpropertiesMethodNameResolver" class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">			 
+		<property name="mappings">
+			<props>
+				<prop key="/member/register.do">memberRegister</prop>
+				<prop key="/member/registerOk.do">memberRegisterOk</prop>
+				<prop key="/member/idCheck.do">memberIdCheck</prop>
+				<prop key="/member/zipcode.do">memberZipcode</prop>
+				<prop key="/member/login.do">memberLogin</prop>
+				<prop key="/member/loginOk.do">memberLoginOk</prop>
+				<prop key="/member/logout.do">memberLogout</prop>
+				<prop key="/member/delete.do">memberDelete</prop>
+				<prop key="/member/deleteOk.do">memberDeleteOk</prop>
+				<prop key="/member/update.do">memberUpdate</prop>
+				<prop key="/member/updateOk.do">memberUpdateOk</prop>
+				<prop key="/member/main.do">memberMain</prop>
+			</props>
+		</property>
+	</bean>
+	
+	<!--  MemberController -->
+	<bean id="memberController" class="com.java.member.controller.MemberController">
+		<property name="memberService" ref="memberServiceImp"/>
+		<property name="methodNameResolver" ref="mpropertiesMethodNameResolver"/>
+	</bean>
+	
+	<!-- MemberService -->
+	<bean id="memberServiceImp" class="com.java.member.service.MemberServiceImp">
+		<property name="memberDao" ref="memberDaoImp"/>
+	</bean>
+	
+	<!-- MemberDao -->
+	<bean id="memberDaoImp" class="com.java.member.dao.MemberDaoImp">
+		<property name="sqlSessionTemplate" ref="sqlSessionTemplate"/>
+	</bean>
+</beans>

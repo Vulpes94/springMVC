@@ -33,6 +33,7 @@
   				/WEB-INF/guest.xml
   				/WEB-INF/myBatis.xml
   				/WEB-INF/board.xml
+  				/WEB-INF/member.xml
   		</param-value>
   	</init-param>
   	<load-on-startup>1</load-on-startup>
@@ -48,6 +49,7 @@
   				/WEB-INF/guest.xml
   				/WEB-INF/myBatis.xml
   				/WEB-INF/board.xml
+  				/WEB-INF/member.xml
   		</param-value>
   </context-param>
   

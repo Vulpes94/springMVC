@@ -47,10 +47,10 @@
   		SELECT id FROM member WHERE id=#{id}
   	</select>
   	
-  	<!-- 
+
   	<select id="memberZipcode"  parameterType="String" resultType="com.java.member.dto.ZipcodeDto">
-  			 SELECT * FROM zipcode WHERE dong=#{dong} 
-   </select>  -->
+  		SELECT * FROM zipcode WHERE dong=#{dong} 
+   </select>  
    
 	<select id="loginCheck" parameterType="java.util.HashMap" resultType="String">
 		SELECT member_level FROM member WHERE id=#{id} AND password=#{password}

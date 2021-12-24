@@ -12,6 +12,7 @@
 				<prop key="/test/*.do">testController</prop>
 				<prop key="/guest/*.do">guestController</prop>
 				<prop key="/board/*.do">boardController</prop>
+				<prop key="/member/*.do">memberController</prop>
 			</props>
 		</property>
 	</bean>
