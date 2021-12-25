@@ -13,7 +13,7 @@
 .springBeans
 
 #ignore properties file
-config.properties
+*.properties
 
 #Tern plugin
 .tern-project
