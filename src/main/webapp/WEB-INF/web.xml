@@ -34,6 +34,7 @@
   				/WEB-INF/myBatis.xml
   				/WEB-INF/board.xml
   				/WEB-INF/member.xml
+  				/WEB-INF/fileBoard.xml
   		</param-value>
   	</init-param>
   	<load-on-startup>1</load-on-startup>
@@ -50,6 +51,7 @@
   				/WEB-INF/myBatis.xml
   				/WEB-INF/board.xml
   				/WEB-INF/member.xml
+  				/WEB-INF/fileBoard.xml
   		</param-value>
   </context-param>
   
