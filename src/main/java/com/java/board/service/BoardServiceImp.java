@@ -5,26 +5,18 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.java.aop.LogAspect;
 import com.java.board.dao.BoardDao;
 import com.java.board.dto.BoardDto;
 
+@Component
 public class BoardServiceImp implements BoardService {
-	private BoardDao boardDao;
-
-	public BoardServiceImp() {
-	}
-
-	public BoardServiceImp(BoardDao boardDao) {
-		this.boardDao = boardDao;
-	}
-
-	public void setBoardDao(BoardDao boardDao) {
-		this.boardDao = boardDao;
-	}
+  @Autowired
+  private BoardDao boardDao;
 
 	@Override
 	public void boardWrite(ModelAndView mav) {

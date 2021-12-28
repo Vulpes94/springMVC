@@ -4,23 +4,17 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.mybatis.spring.SqlSessionTemplate;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import com.java.aop.LogAspect;
 import com.java.board.dto.BoardDto;
 
+@Component
 public class BoardDaoImp implements BoardDao {
-	private SqlSessionTemplate sqlSessionTemplate;
+  @Autowired
+  private SqlSessionTemplate sqlSessionTemplate;
 
-	public BoardDaoImp() {
-	}
 
-	public BoardDaoImp(SqlSessionTemplate sqlSessionTemplate) {
-		this.sqlSessionTemplate = sqlSessionTemplate;
-	}
-
-	public void setSqlSessionTemplate(SqlSessionTemplate sqlSessionTemplate) {
-		this.sqlSessionTemplate = sqlSessionTemplate;
-	}
 
 	@Override
 	public int boardGroupNumberMax() {
