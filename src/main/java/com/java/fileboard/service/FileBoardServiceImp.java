@@ -1,10 +1,15 @@
 package com.java.fileboard.service;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
@@ -164,18 +169,151 @@ public class FileBoardServiceImp implements FileBoardService {
 
     FileBoardDto fileBoardDto = fileBoardDao.fileRead(boardNumber);
     LogAspect.logger.info(LogAspect.LogMsg + fileBoardDto.toString());
-    
+
     if (fileBoardDto.getFileSize() != 0) {
       int index = fileBoardDto.getFileName().indexOf("_") + 1;
       fileBoardDto.setFileName(fileBoardDto.getFileName().substring(index));
     }
-    
+
     mav.addObject("boardDto", fileBoardDto);
     mav.addObject("pageNumber", pageNumber);
 
     mav.setViewName("fileboard/read");
   }
-  
-  
+
+
+  @Override
+  public void fileBoardDownload(ModelAndView mav) {
+    Map<String, Object> map = mav.getModelMap();
+    HttpServletRequest request = (HttpServletRequest) map.get("request");
+    HttpServletResponse response = (HttpServletResponse) map.get("response");
+
+    int boardNumber = Integer.parseInt(request.getParameter("boardNumber"));
+    FileBoardDto fileBoardDto = fileBoardDao.fileBoardSelect(boardNumber);
+    LogAspect.logger.info(LogAspect.LogMsg + fileBoardDto.toString());
+
+    BufferedInputStream fis = null;
+    BufferedOutputStream fos = null;
+
+    try {
+      int index = fileBoardDto.getFileName().indexOf("_") + 1;
+      String dbName = fileBoardDto.getFileName().substring(index);
+      String fileName = new String(dbName.getBytes("UTF-8"), "ISO-8859-1");
+
+      response.setHeader("Content-Disposition", "attachment;filename=" + fileName); // 대화창
+      response.setHeader("Content-Transfer-Encoding", "binary"); // 인코딩 설정
+      response.setContentType("application/octet-stream");
+      response.setContentLengthLong(fileBoardDto.getFileSize());
+
+      fis = new BufferedInputStream(new FileInputStream(fileBoardDto.getPath()));
+      fos = new BufferedOutputStream(response.getOutputStream());
+
+      while (true) {
+        int data = fis.read();
+        if (data == -1)
+          break;
+        fos.write(data);
+      }
+
+      fos.flush();
+    } catch (IOException e) {
+      e.printStackTrace();
+    } finally {
+      try {
+        if (fis != null)
+          fis.close();
+        if (fos != null)
+          fos.close();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
+
+  }
+
+  @Override
+  public void fileBoardUpdate(ModelAndView mav) {
+    Map<String, Object> map = mav.getModelMap();
+    HttpServletRequest request = (HttpServletRequest) map.get("request");
+
+    int boardNumber = Integer.parseInt(request.getParameter("boardNumber"));
+    int pageNumber = Integer.parseInt(request.getParameter("pageNumber"));
+    LogAspect.logger.info(LogAspect.LogMsg + boardNumber + "," + pageNumber);
+
+    FileBoardDto fileBoardDto = fileBoardDao.fileBoardSelect(boardNumber);
+    fileBoardDto.setContent(fileBoardDto.getContent().replace("<br/>", "\r\n"));
+
+    if (fileBoardDto.getFileName() != null) {
+      int index = fileBoardDto.getFileName().indexOf("_") + 1;
+      fileBoardDto.setFileName(fileBoardDto.getFileName().substring(index));
+    }
+
+    LogAspect.logger.info(LogAspect.LogMsg + fileBoardDto.toString());
+
+    mav.addObject("boardDto", fileBoardDto);
+    mav.addObject("pageNumber", pageNumber);
+
+    mav.setViewName("fileboard/update");
+
+  }
+
+  @Override
+  public void fileBoardUpdateOk(ModelAndView mav) {
+    Map<String, Object> map = mav.getModelMap();
+    MultipartHttpServletRequest request = (MultipartHttpServletRequest) map.get("request");
+    FileBoardDto fileBoardDto = (FileBoardDto) map.get("fileBoardDto");
+
+    int pageNumber = Integer.parseInt(request.getParameter("pageNumber"));
+
+    MultipartFile upFile = request.getFile("file");
+    if (upFile.getSize() != 0) {
+      String fileName = Long.toString(System.currentTimeMillis()) + "_" + upFile.getOriginalFilename();
+      long fileSize = upFile.getSize();
+      LogAspect.logger.info(LogAspect.LogMsg + fileName + "," + fileSize);
+
+      File path = new File("D:\\pds\\");
+      path.mkdir();
+
+      if (path.exists() && path.isDirectory()) {
+        File file = new File(path, fileName);
+        try {
+          upFile.transferTo(file);
+
+          fileBoardDto.setPath(file.getAbsolutePath());
+          fileBoardDto.setFileName(fileName);
+          fileBoardDto.setFileSize(fileSize);
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+
+
+      }
+    }
+
+    int check = fileBoardDao.update(fileBoardDto);
+    LogAspect.logger.info(LogAspect.LogMsg + check);
+
+    mav.addObject("check", check);
+    mav.addObject("pageNumber", pageNumber);
+    mav.setViewName("fileboard/updateOk");
+  }
+
+  @Override
+  public void fileBoardDeleteOk(ModelAndView mav) {
+    Map<String, Object> map = mav.getModelMap();
+    HttpServletRequest request = (HttpServletRequest) map.get("request");
+
+    int boardNumber = Integer.parseInt(request.getParameter("boardNumber"));
+    int pageNumber = Integer.parseInt(request.getParameter("pageNumber"));
+    String password = request.getParameter("password");
+    LogAspect.logger.info(LogAspect.LogMsg + boardNumber + "," + pageNumber);
+
+    int check = fileBoardDao.fileBoardDeleteOk(boardNumber, password);
+    LogAspect.logger.info(LogAspect.LogMsg + check);
+
+    mav.addObject("check", check);
+    mav.addObject("pageNumber", pageNumber);
+    mav.setViewName("fileboard/deleteOk");
+  }
 
 }

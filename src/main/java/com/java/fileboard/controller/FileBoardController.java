@@ -55,6 +55,49 @@ public class FileBoardController extends MultiActionController {
   }
 
   public ModelAndView fileDownLoad(HttpServletRequest request, HttpServletResponse response) {
-    return null;
+    ModelAndView mav = new ModelAndView();
+    mav.addObject("request", request);
+    mav.addObject("response", response);
+
+    fileBoardService.fileBoardDownload(mav);
+    return mav;
   }
+
+  public ModelAndView fileUpdate(HttpServletRequest request, HttpServletResponse response) {
+    ModelAndView mav = new ModelAndView();
+    mav.addObject("request", request);
+
+    fileBoardService.fileBoardUpdate(mav);
+    return mav;
+  }
+
+  public ModelAndView fileUpdateOk(HttpServletRequest request, HttpServletResponse response, FileBoardDto fileBoardDto) {
+    ModelAndView mav = new ModelAndView();
+    mav.addObject("request", request);
+    mav.addObject("fileBoardDto", fileBoardDto);
+
+    fileBoardService.fileBoardUpdateOk(mav);
+    return mav;
+  }
+
+  public ModelAndView fileDelete(HttpServletRequest request, HttpServletResponse response) {
+    int boardNumber = Integer.parseInt(request.getParameter("boardNumber"));
+    int pageNumber = Integer.parseInt(request.getParameter("pageNumber"));
+
+    ModelAndView mav = new ModelAndView();
+    mav.addObject("boardNumber", boardNumber);
+    mav.addObject("pageNumber", pageNumber);
+
+    mav.setViewName("fileboard/delete");
+    return mav;
+  }
+
+  public ModelAndView fileDeleteOk(HttpServletRequest request, HttpServletResponse response) {
+    ModelAndView mav = new ModelAndView();
+    mav.addObject("request", request);
+
+    fileBoardService.fileBoardDeleteOk(mav);
+    return mav;
+  }
+
 }

@@ -16,5 +16,10 @@ public interface FileBoardDao {
   public List<FileBoardDto> fileBoardList(int startRow, int endRow);
   
   public FileBoardDto fileRead(int boardNumber);
+  
+  public FileBoardDto fileBoardSelect(int boardNumber);
+  
+  public int update(FileBoardDto fileBoardDto);
 
+  public int fileBoardDeleteOk(int boardNumber,String password);
 }

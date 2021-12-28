@@ -66,4 +66,28 @@ public class FileBoardDaoImp implements FileBoardDao {
     return fileBoardDto;
   }
 
+  @Override
+  public FileBoardDto fileBoardSelect(int boardNumber) {
+    return sqlSessionTemplate.selectOne("fileBoardRead", boardNumber);
+  }
+
+  @Override
+  public int update(FileBoardDto fileBoardDto) {
+    int check = 0;
+    if (fileBoardDto.getFileName() == null) {
+      check = sqlSessionTemplate.update("boardUpdate", fileBoardDto);
+    } else {
+      check = sqlSessionTemplate.update("fileboardUpdate", fileBoardDto);
+    }
+    return check;
+  }
+  
+  @Override
+  public int fileBoardDeleteOk(int boardNumber, String password) {
+    HashMap<String, Object> hMap = new HashMap<String, Object>();
+    hMap.put("boardNumber", boardNumber);
+    hMap.put("password", password);
+
+    return sqlSessionTemplate.delete("boardDelete", hMap);
+  }
 }
