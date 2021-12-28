@@ -39,7 +39,7 @@
 	
 	<update id="fileboardUpdate" parameterType="com.java.fileboard.dto.FileBoardDto">
 	 	UPDATE board SET email=#{email}, subject=#{subject}, content=#{content}, 
-	 	file_name=#{fileName}, path=#{path}, file_size=#{fileSize} 
+	 	file_name=#{fileName}, path=#{path}, file_size=#{fileSize} ,password=#{password}
 	 	WHERE board_number=#{boardNumber}
 	</update>
 </mapper>

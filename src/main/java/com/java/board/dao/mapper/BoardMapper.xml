@@ -66,7 +66,7 @@
 	</delete>
 
 	<update id="boardUpdate" parameterType="com.java.board.dto.BoardDto">
-		UPDATE board SET email=#{email}, subject=#{subject}, content=#{content}
+		UPDATE board SET email=#{email}, subject=#{subject}, content=#{content} ,password=#{password}
 		WHERE board_number=#{boardNumber}
 	</update>
 </mapper>    
