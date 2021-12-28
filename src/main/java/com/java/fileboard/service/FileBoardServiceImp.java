@@ -286,7 +286,12 @@ public class FileBoardServiceImp implements FileBoardService {
           e.printStackTrace();
         }
 
-
+        FileBoardDto readBoard = fileBoardDao.fileBoardSelect(fileBoardDto.getBoardNumber());
+        if (readBoard.getFileName() != null) {
+          File checkFile = new File(readBoard.getPath());
+          if (checkFile.exists() && checkFile.isFile())
+            checkFile.delete();
+        }
       }
     }
 
@@ -307,10 +312,17 @@ public class FileBoardServiceImp implements FileBoardService {
     int pageNumber = Integer.parseInt(request.getParameter("pageNumber"));
     String password = request.getParameter("password");
     LogAspect.logger.info(LogAspect.LogMsg + boardNumber + "," + pageNumber);
-
+    
+    FileBoardDto readBoard = fileBoardDao.fileBoardSelect(boardNumber);
+    
     int check = fileBoardDao.fileBoardDeleteOk(boardNumber, password);
     LogAspect.logger.info(LogAspect.LogMsg + check);
-
+    
+    if (check > 0 && readBoard.getPath() != null) {
+      File file = new File(readBoard.getPath());
+      if (file.exists() && file.isFile()) file.delete();
+    }
+    
     mav.addObject("check", check);
     mav.addObject("pageNumber", pageNumber);
     mav.setViewName("fileboard/deleteOk");
