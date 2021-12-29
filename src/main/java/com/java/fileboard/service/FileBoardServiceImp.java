@@ -4,12 +4,13 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
@@ -17,18 +18,10 @@ import com.java.aop.LogAspect;
 import com.java.fileboard.dao.FileBoardDao;
 import com.java.fileboard.dto.FileBoardDto;
 
+@Component
 public class FileBoardServiceImp implements FileBoardService {
+  @Autowired
   private FileBoardDao fileBoardDao;
-
-  public FileBoardServiceImp() {}
-
-  public FileBoardServiceImp(FileBoardDao fileBoardDao) {
-    this.fileBoardDao = fileBoardDao;
-  }
-
-  public void setFileBoardDao(FileBoardDao fileBoardDao) {
-    this.fileBoardDao = fileBoardDao;
-  }
 
   @Override
   public void fileBoardWrite(ModelAndView mav) {
@@ -216,7 +209,7 @@ public class FileBoardServiceImp implements FileBoardService {
       }
 
       fos.flush();
-    } catch (IOException e) {
+    } catch (Throwable e) {
       e.printStackTrace();
     } finally {
       try {
@@ -312,17 +305,18 @@ public class FileBoardServiceImp implements FileBoardService {
     int pageNumber = Integer.parseInt(request.getParameter("pageNumber"));
     String password = request.getParameter("password");
     LogAspect.logger.info(LogAspect.LogMsg + boardNumber + "," + pageNumber);
-    
+
     FileBoardDto readBoard = fileBoardDao.fileBoardSelect(boardNumber);
-    
+
     int check = fileBoardDao.fileBoardDeleteOk(boardNumber, password);
     LogAspect.logger.info(LogAspect.LogMsg + check);
-    
+
     if (check > 0 && readBoard.getPath() != null) {
       File file = new File(readBoard.getPath());
-      if (file.exists() && file.isFile()) file.delete();
+      if (file.exists() && file.isFile())
+        file.delete();
     }
-    
+
     mav.addObject("check", check);
     mav.addObject("pageNumber", pageNumber);
     mav.setViewName("fileboard/deleteOk");
