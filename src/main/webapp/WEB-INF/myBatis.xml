@@ -23,14 +23,7 @@
 	<!-- MyBatis -->
 	<bean id="sqlSessionFactoryBean" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="dataSource" ref="datasource"/>
-		<property name="mapperLocations">
-			<list>
-				<value>classpath:com/java/guest/dao/mapper/GuestMapper.xml</value>
-				<value>classpath:com/java/board/dao/mapper/BoardMapper.xml</value>
-				<value>classpath:com/java/member/dao/mapper/MemberMapper.xml</value>
-				<value>classpath:com/java/fileboard/dao/mapper/FileBoardMapper.xml</value>
-			</list>
-		</property>
+		<property name="mapperLocations" value="classpath:com/java/**/**/*.xml"/>
 	</bean>
 	
 	<bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
