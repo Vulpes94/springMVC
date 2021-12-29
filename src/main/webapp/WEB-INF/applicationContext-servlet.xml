@@ -7,19 +7,9 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
 		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd">
 
-	<!-- HanderMapping / URI & CLASS (Controller)-->
-<!-- 	<bean id="handlerMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
-		<property name="mappings">
-			<props>
-				<prop key="/test/*.do">testController</prop>
-				<prop key="/guest/*.do">guestController</prop>
-				<prop key="/member/*.do">memberController</prop>
-				<prop key="/fileboard/*.do">fileBoardController</prop>
-			</props>
-		</property>
-	</bean> -->
-	
+
 	<context:component-scan base-package="com.java.board.*"/>
+	<context:component-scan base-package="com.java.guest.*"/>
 	
 	<!-- AOP   --> 
 	<bean id="logAspect" class="com.java.aop.LogAspect"/> 

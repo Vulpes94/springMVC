@@ -4,113 +4,105 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.java.aop.LogAspect;
 import com.java.guest.dao.GuestDao;
 import com.java.guest.dto.GuestDto;
 
+@Component
 public class GuestServiceImp implements GuestService {
-	private GuestDao guestDao;
+  @Autowired
+  private GuestDao guestDao;
 
-	public GuestServiceImp() {
-	}
+  @Override
+  public void guestWrite(ModelAndView mav) {
+    Map<String, Object> map = mav.getModel();
+    HttpServletRequest request = (HttpServletRequest) map.get("request");
 
-	public GuestServiceImp(GuestDao guestDao) {
-		this.guestDao = guestDao;
-	}
+    String pageNumber = request.getParameter("pageNumber");
+    if (pageNumber == null)
+      pageNumber = "1";
 
-	public void setGuestDao(GuestDao guestDao) {
-		this.guestDao = guestDao;
-	}
+    int currentPage = Integer.parseInt(pageNumber);
+    LogAspect.logger.info(LogAspect.LogMsg + currentPage);
 
-	@Override
-	public void guestWrite(ModelAndView mav) {
-		Map<String, Object> map = mav.getModel();
-		HttpServletRequest request = (HttpServletRequest) map.get("request");
+    int boardSize = 3;
+    int startRow = (currentPage - 1) * boardSize + 1;
+    int endRow = currentPage * boardSize;
 
-		String pageNumber = request.getParameter("pageNumber");
-		if (pageNumber == null)
-			pageNumber = "1";
+    int count = guestDao.getCount();
+    LogAspect.logger.info(LogAspect.LogMsg + count);
 
-		int currentPage = Integer.parseInt(pageNumber);
-		LogAspect.logger.info(LogAspect.LogMsg + currentPage);
+    List<GuestDto> guestList = null;
+    if (count > 0) {
+      guestList = guestDao.guestList(startRow, endRow);
+      LogAspect.logger.info(LogAspect.LogMsg + guestList.size());
+    }
 
-		int boardSize = 3;
-		int startRow = (currentPage - 1) * boardSize + 1;
-		int endRow = currentPage * boardSize;
+    mav.addObject("guestList", guestList);
+    mav.addObject("count", count);
+    mav.addObject("boardSize", boardSize);
+    mav.addObject("currentPage", currentPage);
 
-		int count = guestDao.getCount();
-		LogAspect.logger.info(LogAspect.LogMsg + count);
+    mav.setViewName("guest/write");
+  }
 
-		List<GuestDto> guestList = null;
-		if (count > 0) {
-			guestList = guestDao.guestList(startRow, endRow);
-			LogAspect.logger.info(LogAspect.LogMsg + guestList.size());
-		}
+  @Override
+  public void guestWriteOk(ModelAndView mav) {
+    Map<String, Object> map = mav.getModelMap();
+    GuestDto guestDto = (GuestDto) map.get("guestDto");
+    guestDto.setMessage(guestDto.getMessage().replace("\r\n", "<br/>"));
 
-		mav.addObject("guestList", guestList);
-		mav.addObject("count", count);
-		mav.addObject("boardSize", boardSize);
-		mav.addObject("currentPage", currentPage);
+    int check = guestDao.insert(guestDto);
+    LogAspect.logger.info(LogAspect.LogMsg + check);
 
-		mav.setViewName("guest/write");
-	}
+    mav.addObject("check", check);
+    mav.setViewName("guest/writeOk");
+  }
 
-	@Override
-	public void guestWriteOk(ModelAndView mav) {
-		Map<String, Object> map = mav.getModelMap();
-		GuestDto guestDto = (GuestDto) map.get("guestDto");
-		guestDto.setMessage(guestDto.getMessage().replace("\r\n", "<br/>"));
+  @Override
+  public void guestDelete(ModelAndView mav) {
+    Map<String, Object> map = mav.getModelMap();
+    HttpServletRequest request = (HttpServletRequest) map.get("request");
 
-		int check = guestDao.insert(guestDto);
-		LogAspect.logger.info(LogAspect.LogMsg + check);
+    int num = Integer.parseInt(request.getParameter("num"));
+    int check = guestDao.delete(num);
+    LogAspect.logger.info(LogAspect.LogMsg + check);
 
-		mav.addObject("check", check);
-		mav.setViewName("guest/writeOk");
-	}
+    mav.addObject("check", check);
+    mav.setViewName("guest/delete");
+  }
 
-	@Override
-	public void guestDelete(ModelAndView mav) {
-		Map<String, Object> map = mav.getModelMap();
-		HttpServletRequest request = (HttpServletRequest) map.get("request");
+  @Override
+  public void guestUpdate(ModelAndView mav) {
+    Map<String, Object> map = mav.getModelMap();
+    HttpServletRequest request = (HttpServletRequest) map.get("request");
 
-		int num = Integer.parseInt(request.getParameter("num"));
-		int check = guestDao.delete(num);
-		LogAspect.logger.info(LogAspect.LogMsg + check);
+    int num = Integer.parseInt(request.getParameter("num"));
+    GuestDto guestDto = guestDao.select(num);
+    guestDto.setMessage(guestDto.getMessage().replace("<br/>", "\r\n"));
+    LogAspect.logger.info(LogAspect.LogMsg + guestDto.toString());
 
-		mav.addObject("check", check);
-		mav.setViewName("guest/delete");
-	}
+    mav.addObject("guestDto", guestDto);
+    mav.setViewName("guest/update");
+  }
 
-	@Override
-	public void guestUpdate(ModelAndView mav) {
-		Map<String, Object> map = mav.getModelMap();
-		HttpServletRequest request = (HttpServletRequest) map.get("request");
+  @Override
+  public void guestUpdateOk(ModelAndView mav) {
+    Map<String, Object> map = mav.getModelMap();
+    GuestDto guestDto = (GuestDto) map.get("guestDto");
+    LogAspect.logger.info(LogAspect.LogMsg + guestDto.toString());
 
-		int num = Integer.parseInt(request.getParameter("num"));
-		GuestDto guestDto = guestDao.select(num);
-		guestDto.setMessage(guestDto.getMessage().replace("<br/>", "\r\n"));
-		LogAspect.logger.info(LogAspect.LogMsg + guestDto.toString());
+    guestDto.setMessage(guestDto.getMessage().replace("\r\n", "<br/>"));
 
-		mav.addObject("guestDto", guestDto);
-		mav.setViewName("guest/update");
-	}
+    int check = guestDao.updateOk(guestDto);
+    LogAspect.logger.info(LogAspect.LogMsg + check);
 
-	@Override
-	public void guestUpdateOk(ModelAndView mav) {
-		Map<String, Object> map = mav.getModelMap();
-		GuestDto guestDto = (GuestDto) map.get("guestDto");
-		LogAspect.logger.info(LogAspect.LogMsg + guestDto.toString());
-
-		guestDto.setMessage(guestDto.getMessage().replace("\r\n", "<br/>"));
-		
-		int check = guestDao.updateOk(guestDto);
-		LogAspect.logger.info(LogAspect.LogMsg + check);
-		
-		mav.addObject("check",check);
-		mav.setViewName("guest/updateOk");
-	}
+    mav.addObject("check", check);
+    mav.setViewName("guest/updateOk");
+  }
 
 }

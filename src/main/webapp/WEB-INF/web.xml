@@ -30,7 +30,6 @@
   		<param-name>contextConfigLocation</param-name>
   		<param-value>
   				/WEB-INF/applicationContext-servlet.xml
-  				/WEB-INF/guest.xml
   				/WEB-INF/myBatis.xml
   				/WEB-INF/member.xml
   				/WEB-INF/fileBoard.xml
@@ -46,7 +45,6 @@
   	<param-name>contextConfigLocation</param-name>
   		<param-value>
   				/WEB-INF/applicationContext-servlet.xml
-  				/WEB-INF/guest.xml
   				/WEB-INF/myBatis.xml
   				/WEB-INF/member.xml
   				/WEB-INF/fileBoard.xml
