@@ -2,100 +2,106 @@ package com.java.member.controller;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.java.member.dto.MemberDto;
 import com.java.member.service.MemberService;
 
-public class MemberController extends MultiActionController {
-	private MemberService memberService;
+@Controller
+public class MemberController {
+  @Autowired
+  private MemberService memberService;
 
-	public MemberController() {
-	}
+  @RequestMapping(value = "/member/register.do", method = RequestMethod.GET)
+  public ModelAndView memberRegister(HttpServletRequest request, HttpServletResponse response) {
+    return new ModelAndView("member/register");
+  }
 
-	public MemberController(MemberService memberService) {
-		this.memberService = memberService;
-	}
+  @RequestMapping(value = "/member/registerOk.do", method = RequestMethod.POST)
+  public ModelAndView memberRegisterOk(HttpServletRequest request, HttpServletResponse response, MemberDto memberDto) {
+    ModelAndView mav = new ModelAndView();
+    mav.addObject("memberDto", memberDto);
 
-	public void setMemberService(MemberService memberService) {
-		this.memberService = memberService;
-	}
+    memberService.memberRegisterOk(mav);
+    return mav;
+  }
 
-	public ModelAndView memberRegister(HttpServletRequest request, HttpServletResponse response) {
-		return new ModelAndView("member/register");
-	}
+  @RequestMapping(value = "/member/login.do", method = RequestMethod.GET)
+  public ModelAndView memberLogin(HttpServletRequest request, HttpServletResponse response) {
+    return new ModelAndView("member/login");
+  }
 
-	public ModelAndView memberRegisterOk(HttpServletRequest request, HttpServletResponse response,
-			MemberDto memberDto) {
-		ModelAndView mav = new ModelAndView();
-		mav.addObject("memberDto", memberDto);
+  @RequestMapping(value = "/member/loginOk.do", method = RequestMethod.POST)
+  public ModelAndView memberLoginOk(HttpServletRequest request, HttpServletResponse response) {
+    ModelAndView mav = new ModelAndView();
+    mav.addObject("request", request);
 
-		memberService.memberRegisterOk(mav);
-		return mav;
-	}
+    memberService.memberLoginOk(mav);
+    return mav;
+  }
 
-	public ModelAndView memberLogin(HttpServletRequest request, HttpServletResponse response) {
-		return new ModelAndView("member/login");
-	}
+  @RequestMapping(value = "/member/main.do", method = RequestMethod.GET)
+  public ModelAndView memberMain(HttpServletRequest request, HttpServletResponse response) {
+    return new ModelAndView("member/Main");
+  }
 
-	public ModelAndView memberLoginOk(HttpServletRequest request, HttpServletResponse response) {
-		ModelAndView mav = new ModelAndView();
-		mav.addObject("request", request);
+  @RequestMapping(value = "/member/idCheck.do", method = RequestMethod.GET)
+  public ModelAndView memberIdCheck(HttpServletRequest request, HttpServletResponse response) {
+    ModelAndView mav = new ModelAndView();
+    mav.addObject("request", request);
 
-		memberService.memberLoginOk(mav);
-		return mav;
-	}
+    memberService.memberIdCheck(mav);
+    return mav;
+  }
 
-	public ModelAndView memberMain(HttpServletRequest request, HttpServletResponse response) {
-		return new ModelAndView("member/Main");
-	}
+  @RequestMapping(value = "/member/zipcode.do", method = RequestMethod.GET)
+  public ModelAndView memberZipcode(HttpServletRequest request, HttpServletResponse response) {
+    ModelAndView mav = new ModelAndView();
+    mav.addObject("request", request);
 
-	public ModelAndView memberIdCheck(HttpServletRequest request, HttpServletResponse response) {
-		ModelAndView mav = new ModelAndView();
-		mav.addObject("request", request);
+    memberService.memberZipcode(mav);
+    return mav;
+  }
 
-		memberService.memberIdCheck(mav);
-		return mav;
-	}
+  @RequestMapping(value = "/member/logout.do", method = RequestMethod.GET)
+  public ModelAndView memberLogout(HttpServletRequest request, HttpServletResponse response) {
+    return new ModelAndView("member/logout");
+  }
 
-	public ModelAndView memberZipcode(HttpServletRequest request, HttpServletResponse response) {
-		ModelAndView mav = new ModelAndView();
-		mav.addObject("request", request);
+  @RequestMapping(value = "/member/delete.do", method = RequestMethod.GET)
+  public ModelAndView memberDelete(HttpServletRequest request, HttpServletResponse response) {
+    return new ModelAndView("member/delete");
+  }
 
-		memberService.memberZipcode(mav);
-		return mav;
-	}
+  @RequestMapping(value = "/member/deleteOk.do", method = RequestMethod.POST)
+  public ModelAndView memberDeleteOk(HttpServletRequest request, HttpServletResponse response) {
+    ModelAndView mav = new ModelAndView();
+    mav.addObject("request", request);
 
-	public ModelAndView memberLogout(HttpServletRequest request, HttpServletResponse response) {
-		return new ModelAndView("member/logout");
-	}
+    memberService.memberDeleteOk(mav);
+    return mav;
+  }
 
-	public ModelAndView memberDelete(HttpServletRequest request, HttpServletResponse response) {
-		return new ModelAndView("member/delete");
-	}
+  @RequestMapping(value = "/member/update.do", method = RequestMethod.GET)
+  public ModelAndView memberUpdate(HttpServletRequest request, HttpServletResponse response) {
+    ModelAndView mav = new ModelAndView();
+    mav.addObject("request", request);
 
-	public ModelAndView memberDeleteOk(HttpServletRequest request, HttpServletResponse response) {
-		ModelAndView mav = new ModelAndView();
-		mav.addObject("request", request);
+    memberService.memberUpdate(mav);
+    return mav;
+  }
 
-		memberService.memberDeleteOk(mav);
-		return mav;
-	}
-	public ModelAndView memberUpdate(HttpServletRequest request, HttpServletResponse response) {
-		ModelAndView mav = new ModelAndView();
-		mav.addObject("request", request);
+  @RequestMapping(value = "/member/updateOk.do", method = RequestMethod.POST)
+  public ModelAndView memberUpdateOk(HttpServletRequest request, HttpServletResponse response, MemberDto memberDto) {
+    ModelAndView mav = new ModelAndView();
+    mav.addObject("memberDto", memberDto);
 
-		memberService.memberUpdate(mav);
-		return mav;
-	}
-	public ModelAndView memberUpdateOk(HttpServletRequest request, HttpServletResponse response,MemberDto memberDto) {
-		ModelAndView mav = new ModelAndView();
-		mav.addObject("memberDto", memberDto);
-
-		memberService.memberUpdateOk(mav);
-		return mav;
-	}
+    memberService.memberUpdateOk(mav);
+    return mav;
+  }
 
 }

@@ -5,7 +5,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.java.aop.LogAspect;
@@ -13,137 +14,128 @@ import com.java.member.dao.MemberDao;
 import com.java.member.dto.MemberDto;
 import com.java.member.dto.ZipcodeDto;
 
+@Component
 public class MemberServiceImp implements MemberService {
-	private MemberDao memberDao;
+  @Autowired
+  private MemberDao memberDao;
 
-	public MemberServiceImp() {
-	}
+  @Override
+  public void memberRegisterOk(ModelAndView mav) {
+    Map<String, Object> map = mav.getModelMap();
+    MemberDto memberDto = (MemberDto) map.get("memberDto");
 
-	public MemberServiceImp(MemberDao memberDao) {
-		this.memberDao = memberDao;
-	}
+    if (memberDto.getName().equals("관리자")) {
+      memberDto.setMemberLevel("MA");
+    } else {
+      memberDto.setMemberLevel("BA");
+    }
+    LogAspect.logger.info(LogAspect.LogMsg + memberDto.toString());
 
-	public void setMemberDao(MemberDao memberDao) {
-		this.memberDao = memberDao;
-	}
+    int check = memberDao.memberInsert(memberDto);
+    LogAspect.logger.info(LogAspect.LogMsg + check);
 
-	@Override
-	public void memberRegisterOk(ModelAndView mav) {
-		Map<String, Object> map = mav.getModelMap();
-		MemberDto memberDto = (MemberDto) map.get("memberDto");
-		
-		if (memberDto.getName().equals("관리자")) {
-			memberDto.setMemberLevel("MA");
-		} else {
-			memberDto.setMemberLevel("BA");
-		}
-		LogAspect.logger.info(LogAspect.LogMsg + memberDto.toString());
+    mav.addObject("check", check);
+    mav.setViewName("member/registerOk");
+  }
 
-		int check = memberDao.memberInsert(memberDto);
-		LogAspect.logger.info(LogAspect.LogMsg + check);
+  @Override
+  public void memberLoginOk(ModelAndView mav) {
+    Map<String, Object> map = mav.getModelMap();
+    HttpServletRequest request = (HttpServletRequest) map.get("request");
 
-		mav.addObject("check", check);
-		mav.setViewName("member/registerOk");
-	}
+    String id = request.getParameter("id");
+    String password = request.getParameter("password");
+    LogAspect.logger.info(LogAspect.LogMsg + id + "," + password);
 
-	@Override
-	public void memberLoginOk(ModelAndView mav) {
-		Map<String, Object> map = mav.getModelMap();
-		HttpServletRequest request = (HttpServletRequest) map.get("request");
+    String memberLevel = memberDao.loginCheck(id, password);
+    LogAspect.logger.info(LogAspect.LogMsg + memberLevel);
 
-		String id = request.getParameter("id");
-		String password = request.getParameter("password");
-		LogAspect.logger.info(LogAspect.LogMsg + id + "," + password);
+    mav.addObject("memberLevel", memberLevel);
+    mav.addObject("id", id);
 
-		String memberLevel = memberDao.loginCheck(id, password);
-		LogAspect.logger.info(LogAspect.LogMsg + memberLevel);
+    mav.setViewName("member/loginOk");
+  }
 
-		mav.addObject("memberLevel", memberLevel);
-		mav.addObject("id", id);
+  @Override
+  public void memberIdCheck(ModelAndView mav) {
+    Map<String, Object> map = mav.getModelMap();
+    HttpServletRequest request = (HttpServletRequest) map.get("request");
 
-		mav.setViewName("member/loginOk");
-	}
+    String id = request.getParameter("id");
+    LogAspect.logger.info(LogAspect.LogMsg + id);
 
-	@Override
-	public void memberIdCheck(ModelAndView mav) {
-		Map<String, Object> map = mav.getModelMap();
-		HttpServletRequest request = (HttpServletRequest) map.get("request");
+    // 해당 id 있으면 1,해당 id 없으면 0
+    int check = memberDao.idCheck(id);
+    LogAspect.logger.info(LogAspect.LogMsg + check);
 
-		String id = request.getParameter("id");
-		LogAspect.logger.info(LogAspect.LogMsg + id);
+    mav.addObject("id", id);
+    mav.addObject("check", check);
 
-		// 해당 id 있으면 1,해당 id 없으면 0
-		int check = memberDao.idCheck(id);
-		LogAspect.logger.info(LogAspect.LogMsg + check);
+    mav.setViewName("member/idCheck");
+  }
 
-		mav.addObject("id", id);
-		mav.addObject("check", check);
+  @Override
+  public void memberZipcode(ModelAndView mav) {
+    Map<String, Object> map = mav.getModelMap();
+    HttpServletRequest request = (HttpServletRequest) map.get("request");
 
-		mav.setViewName("member/idCheck");
-	}
+    String checkDong = request.getParameter("dong");
 
-	@Override
-	public void memberZipcode(ModelAndView mav) {
-		Map<String, Object> map = mav.getModelMap();
-		HttpServletRequest request = (HttpServletRequest) map.get("request");
+    if (checkDong != null) {
+      LogAspect.logger.info(LogAspect.LogMsg + checkDong);
 
-		String checkDong = request.getParameter("dong");
+      List<ZipcodeDto> zipcodeList = memberDao.zipcodeRead(checkDong);
 
-		if (checkDong != null) {
-			LogAspect.logger.info(LogAspect.LogMsg + checkDong);
+      LogAspect.logger.info(LogAspect.LogMsg + zipcodeList.size());
+      mav.addObject("zipcodeList", zipcodeList);
+    }
 
-			List<ZipcodeDto> zipcodeList = memberDao.zipcodeRead(checkDong);
+    mav.setViewName("member/zipcode");
+  }
 
-			LogAspect.logger.info(LogAspect.LogMsg + zipcodeList.size());
-			mav.addObject("zipcodeList", zipcodeList);
-		}
+  @Override
+  public void memberDeleteOk(ModelAndView mav) {
+    Map<String, Object> map = mav.getModelMap();
+    HttpServletRequest request = (HttpServletRequest) map.get("request");
 
-		mav.setViewName("member/zipcode");
-	}
+    HttpSession session = request.getSession();
+    String id = (String) session.getAttribute("id");
 
-	@Override
-	public void memberDeleteOk(ModelAndView mav) {
-		Map<String, Object> map = mav.getModelMap();
-		HttpServletRequest request = (HttpServletRequest) map.get("request");
+    String password = request.getParameter("password");
+    LogAspect.logger.info(LogAspect.LogMsg + id + "," + password);
 
-		HttpSession session = request.getSession();
-		String id = (String) session.getAttribute("id");
+    int check = memberDao.delete(id, password);
+    LogAspect.logger.info(LogAspect.LogMsg + check);
 
-		String password = request.getParameter("password");
-		LogAspect.logger.info(LogAspect.LogMsg + id + "," + password);
+    mav.addObject("check", check);
+    mav.setViewName("member/deleteOk");
+  }
 
-		int check = memberDao.delete(id, password);
-		LogAspect.logger.info(LogAspect.LogMsg + check);
-		
-		mav.addObject("check", check);
-		mav.setViewName("member/deleteOk");
-	}
+  @Override
+  public void memberUpdate(ModelAndView mav) {
+    Map<String, Object> map = mav.getModelMap();
+    HttpServletRequest request = (HttpServletRequest) map.get("request");
 
-	@Override
-	public void memberUpdate(ModelAndView mav) {
-		Map<String, Object> map = mav.getModelMap();
-		HttpServletRequest request = (HttpServletRequest) map.get("request");
+    HttpSession session = request.getSession();
+    String id = (String) session.getAttribute("id");
+    LogAspect.logger.info(LogAspect.LogMsg + id);
 
-		HttpSession session = request.getSession();
-		String id = (String) session.getAttribute("id");
-		LogAspect.logger.info(LogAspect.LogMsg + id);
+    MemberDto memberDto = memberDao.upDateId(id);
+    LogAspect.logger.info(LogAspect.LogMsg + memberDto.toString());
 
-		MemberDto memberDto = memberDao.upDateId(id);
-		LogAspect.logger.info(LogAspect.LogMsg + memberDto.toString());
+    mav.addObject("memberDto", memberDto);
+    mav.setViewName("member/update");
+  }
 
-		mav.addObject("memberDto", memberDto);
-		mav.setViewName("member/update");
-	}
+  @Override
+  public void memberUpdateOk(ModelAndView mav) {
+    Map<String, Object> map = mav.getModelMap();
+    MemberDto memberDto = (MemberDto) map.get("memberDto");
+    LogAspect.logger.info(LogAspect.LogMsg + memberDto.toString());
 
-	@Override
-	public void memberUpdateOk(ModelAndView mav) {
-		Map<String, Object> map = mav.getModelMap();
-		MemberDto memberDto = (MemberDto) map.get("memberDto");
-		LogAspect.logger.info(LogAspect.LogMsg + memberDto.toString());
-		
-		int check = memberDao.updateId(memberDto);
-		
-		mav.addObject("check", check);
-		mav.setViewName("member/updateOk");
-	}
+    int check = memberDao.updateId(memberDto);
+
+    mav.addObject("check", check);
+    mav.setViewName("member/updateOk");
+  }
 }
